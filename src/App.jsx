@@ -1,70 +1,58 @@
 import { useEffect, useState } from "react";
-import { api } from "./api";
+import { api, getToken, clearToken, setUnauthorizedHandler } from "./api";
 import Welcome from "./components/Welcome";
 import Onboarding from "./components/Onboarding";
 import Workspace from "./components/Workspace";
 
-// There's no login yet, so the browser remembers who you are (user id) in localStorage.
-const KEY = "compass_session";
-const load = () => {
-  try {
-    return JSON.parse(localStorage.getItem(KEY));
-  } catch {
-    return null;
-  }
-};
-
+// Who is logged in is decided by the token in localStorage (see api.js).
+// On load we ask the backend "who am I?" and then show the right screen:
+//   no token -> login/sign-up   |   not onboarded -> onboarding   |   otherwise -> chat
 export default function App() {
-  const [session, setSession] = useState(load); // { userId, name, conversationId }
-  const [stage, setStage] = useState(session ? "loading" : "welcome");
+  const [session, setSession] = useState(null); // { userId, name, conversationId }
+  const [stage, setStage] = useState(getToken() ? "loading" : "welcome");
   const [problem, setProblem] = useState("");
+  const [notice, setNotice] = useState("");
 
-  const start = (s) => {
-    localStorage.setItem(KEY, JSON.stringify(s));
-    setSession(s);
-    setStage("onboarding");
-  };
-  const update = (patch) =>
-    setSession((s) => {
-      const next = { ...s, ...patch };
-      localStorage.setItem(KEY, JSON.stringify(next));
-      return next;
-    });
-  const reset = () => {
-    localStorage.removeItem(KEY);
+  const update = (patch) => setSession((s) => ({ ...s, ...patch }));
+
+  function logout(message = "") {
+    clearToken();
     setSession(null);
+    setNotice(message);
     setStage("welcome");
-  };
+  }
 
-  function check() {
+  async function load() {
     setStage("loading");
     setProblem("");
-    api
-      .getUser(session.userId)
-      .then(({ profile }) => setStage(profile?.onboarding_done_at ? "chat" : "onboarding"))
-      .catch((e) => {
-        // 400/404 = this user doesn't exist (anymore), so start fresh. Anything else = try again.
-        if (e.status === 400 || e.status === 404) reset();
-        else {
-          setProblem(e.message);
-          setStage("problem");
-        }
-      });
+    setNotice("");
+    try {
+      const { user, profile, latest_conversation_id } = await api.me();
+      setSession({ userId: user.id, name: user.full_name || "", conversationId: latest_conversation_id });
+      setStage(profile?.onboarding_done_at ? "chat" : "onboarding");
+    } catch (e) {
+      if (e.status === 401) return; // the 401 handler below has already logged us out
+      setProblem(e.message);
+      setStage("problem");
+    }
   }
 
   useEffect(() => {
-    if (session) check();
+    // If the server ever says our token is no longer valid, go back to the login screen.
+    setUnauthorizedHandler(() => logout("Your session has ended. Please log in again."));
+    if (getToken()) load();
   }, []);
 
-  if (stage === "welcome") return <Welcome onDone={start} />;
+  if (stage === "welcome") return <Welcome onDone={load} notice={notice} />;
   if (stage === "loading") return <div className="center muted">Loading…</div>;
   if (stage === "problem")
     return (
       <div className="center">
         <p>{problem}</p>
-        <button className="btn" onClick={check}>Try again</button>
+        <button className="btn" onClick={load}>Try again</button>
+        <button className="link" onClick={() => logout()}>Log out</button>
       </div>
     );
   if (stage === "onboarding") return <Onboarding session={session} onDone={() => setStage("chat")} />;
-  return <Workspace session={session} update={update} onReset={reset} />;
+  return <Workspace session={session} update={update} onReset={() => logout()} />;
 }

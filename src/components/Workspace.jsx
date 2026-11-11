@@ -94,7 +94,7 @@ export default function Workspace({ session, update, onReset }) {
         <span className="muted hide-sm">{session.name ? `Hi, ${session.name}` : ""}</span>
         <span className="spacer" />
         <button className="link" onClick={newChat}>New chat</button>
-        <button className="link" onClick={() => window.confirm("Start over with a new profile on this browser?") && onReset()}>Start over</button>
+        <button className="link" onClick={() => onReset()}>Log out</button>
       </header>
 
       <div className="tabs">
