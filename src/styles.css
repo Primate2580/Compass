@@ -1,0 +1,116 @@
+:root {
+  --bg: #f6f7f5;
+  --panel: #ffffff;
+  --text: #1c2321;
+  --muted: #66716d;
+  --border: #dfe4e1;
+  --accent: #0f766e;
+  --accent-soft: #e0f2ef;
+  --on-accent: #ffffff;
+  --user: #0f766e;
+  --error: #b42318;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #101514;
+    --panel: #182120;
+    --text: #e8eeec;
+    --muted: #96a39f;
+    --border: #2a3634;
+    --accent: #2dd4bf;
+    --accent-soft: #163733;
+    --on-accent: #06201c;
+    --user: #14594f;
+    --error: #ff8f85;
+  }
+}
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; }
+h1, h2, h3, h4 { margin: 0 0 8px; line-height: 1.25; }
+p { margin: 0 0 12px; }
+.muted { color: var(--muted); }
+.tiny { font-size: 0.8rem; }
+.error { color: var(--error); }
+.spacer { flex: 1; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; gap: 12px; }
+.row label { flex: 1; }
+
+input, textarea {
+  width: 100%; font: inherit; color: inherit; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+}
+input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+label { display: block; font-size: 0.9rem; margin-bottom: 12px; }
+label input, label textarea { margin-top: 4px; }
+
+.btn, .chip {
+  font: inherit; cursor: pointer; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--panel); color: var(--text); padding: 10px 16px;
+}
+.btn.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.link { background: none; border: none; font: inherit; color: var(--accent); cursor: pointer; padding: 6px 8px; }
+.link:disabled { color: var(--muted); cursor: default; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+.chips.small { margin: 0; gap: 6px; }
+.chips.small .chip { padding: 6px 10px; }
+.chip { border-radius: 999px; text-align: left; }
+.chip:hover { border-color: var(--accent); }
+.chip.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+.center { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+.card { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; text-align: left; }
+.welcome { text-align: center; }
+.welcome label { text-align: left; }
+.logo { font-size: 2.5rem; margin-bottom: 4px; }
+.nav { display: flex; align-items: center; gap: 4px; margin-top: 22px; }
+.progress { height: 6px; border-radius: 6px; background: var(--border); overflow: hidden; margin-bottom: 14px; }
+.progress div { height: 100%; background: var(--accent); transition: width 0.25s; }
+.listrow { display: flex; justify-content: space-between; gap: 8px; align-items: center; border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 0.9rem; }
+
+/* ---- chat workspace ---- */
+.app { height: 100%; display: flex; flex-direction: column; }
+.topbar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--panel); border-bottom: 1px solid var(--border); }
+.tabs { display: none; }
+.workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 340px; }
+.chat { display: flex; flex-direction: column; min-height: 0; }
+.messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.empty { margin: auto; max-width: 560px; text-align: center; }
+.starters { display: flex; flex-direction: column; gap: 8px; align-items: stretch; margin-top: 16px; }
+.bubble { max-width: min(720px, 92%); padding: 12px 16px; border-radius: var(--radius); white-space: pre-wrap; word-wrap: break-word; }
+.bubble.user { align-self: flex-end; background: var(--user); color: #fff; border-bottom-right-radius: 4px; }
+.bubble.assistant { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); border-bottom-left-radius: 4px; white-space: normal; }
+.typing { color: var(--muted); font-style: italic; }
+.badge { margin-top: 8px; font-size: 0.85rem; color: var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 4px 10px; display: inline-block; margin-right: 6px; }
+.composer { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--panel); align-items: flex-end; }
+.composer textarea { resize: none; }
+
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md p, .md ul, .md ol { margin: 0 0 10px; }
+.md ul, .md ol { padding-left: 22px; }
+.md table { border-collapse: collapse; display: block; overflow-x: auto; margin: 8px 0 12px; font-size: 0.9rem; }
+.md th, .md td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+.md th { background: var(--accent-soft); }
+.md code { background: var(--bg); padding: 1px 5px; border-radius: 5px; }
+
+.tasks { border-left: 1px solid var(--border); background: var(--panel); padding: 20px; overflow-y: auto; }
+.quad { margin-bottom: 18px; }
+.quad h4 { font-size: 0.95rem; }
+.task { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 8px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.92rem; cursor: pointer; }
+.task input { width: auto; margin-top: 4px; }
+.tag { font-style: normal; font-size: 0.72rem; margin-left: 8px; background: var(--accent-soft); color: var(--accent); border-radius: 6px; padding: 1px 6px; }
+
+@media (max-width: 800px) {
+  .hide-sm { display: none; }
+  .tabs { display: flex; background: var(--panel); border-bottom: 1px solid var(--border); }
+  .tabs button { flex: 1; padding: 10px; font: inherit; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; }
+  .tabs button.on { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+  .workspace { grid-template-columns: 1fr; }
+  .workspace.show-chat .tasks, .workspace.show-tasks .chat { display: none; }
+  .tasks { border-left: none; }
+  .card { padding: 20px; }
+}
